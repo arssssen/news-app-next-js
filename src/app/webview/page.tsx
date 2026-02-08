@@ -1,12 +1,12 @@
 'use client';
 
-import { useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-export default function WebviewPage() {
+function WebviewContent() {
   const searchParams = useSearchParams();
   const url = searchParams.get('url');
   const title = searchParams.get('title');
@@ -58,5 +58,20 @@ export default function WebviewPage() {
         />
       </div>
     </div>
+  );
+}
+
+export default function WebviewPage() {
+  return (
+    <Suspense
+      fallback={
+        <Card className="space-y-3">
+          <h1 className="font-display text-xl font-semibold">Loading article</h1>
+          <p className="text-sm text-ink/60">Preparing the embedded view...</p>
+        </Card>
+      }
+    >
+      <WebviewContent />
+    </Suspense>
   );
 }
