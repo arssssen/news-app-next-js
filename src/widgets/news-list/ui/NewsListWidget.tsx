@@ -77,32 +77,6 @@ export function NewsListWidget({ onPressArticle }: Props) {
     refresh,
   } = useNewsList(filters);
 
-  if (isInitialLoading && articles.length === 0) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center">
-        <p className="text-sm text-ink/70">Loading news...</p>
-      </div>
-    );
-  }
-
-  if (errorMessage && articles.length === 0) {
-    return (
-      <div className="flex h-[60vh] flex-col items-center justify-center gap-3 text-center">
-        <p className="text-base font-semibold text-ink">Failed to load news.</p>
-        <p className="text-sm text-ink/60">{errorMessage}</p>
-        <Button onClick={retry}>Retry</Button>
-      </div>
-    );
-  }
-
-  if (!isInitialLoading && articles.length === 0) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center text-center">
-        <p className="text-base font-semibold text-ink">{EMPTY_STATE}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="space-y-4 rounded-3xl border border-ink/10 bg-white/70 p-5 shadow-card">
@@ -124,11 +98,44 @@ export function NewsListWidget({ onPressArticle }: Props) {
         </div>
       </div>
 
-      <div className="space-y-3">
-        {articles.map((article) => (
-          <NewsRow key={article.url} article={article} onPressArticle={onPressArticle} />
-        ))}
-      </div>
+      {isInitialLoading && articles.length === 0 ? (
+        <div className="space-y-3">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={`skeleton-${index}`}
+              className="flex w-full gap-4 rounded-3xl border border-ink/10 bg-white/70 p-4 shadow-card animate-pulse"
+            >
+              <div className="h-24 w-24 rounded-2xl bg-sand" />
+              <div className="flex flex-1 flex-col gap-3">
+                <div className="h-4 w-3/4 rounded-full bg-sand" />
+                <div className="h-3 w-full rounded-full bg-sand" />
+                <div className="h-3 w-1/2 rounded-full bg-sand" />
+                <div className="h-8 w-24 rounded-full bg-sand" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : errorMessage && articles.length === 0 ? (
+        <div className="flex h-[50vh] flex-col items-center justify-center gap-3 text-center">
+          <p className="text-base font-semibold text-ink">Failed to load news.</p>
+          <p className="text-sm text-ink/60">{errorMessage}</p>
+          <Button onClick={retry}>Retry</Button>
+        </div>
+      ) : !isInitialLoading && articles.length === 0 ? (
+        <div className="flex h-[50vh] items-center justify-center text-center">
+          <p className="text-base font-semibold text-ink">{EMPTY_STATE}</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {articles.map((article) => (
+            <NewsRow
+              key={article.url}
+              article={article}
+              onPressArticle={onPressArticle}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="flex justify-center">
         {hasMore ? (
